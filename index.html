@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استودیو انیمیشن هوش مصنوعی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0b1a; --bg2:#15122a; --fg:#f4f0ff; --muted:#a89fc4;
+  --card:rgba(35,30,60,.7); --primary:#c84ee0; --primary2:#a855f7;
+  --border:rgba(255,255,255,.08); --accent:#ec4899;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Vazirmatn','Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--fg);min-height:100vh;line-height:1.5;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(168,85,247,.18), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(236,72,153,.15), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(168,85,247,.1), transparent 60%);
+  background-attachment:fixed;
+}
+::selection{background:rgba(200,78,224,.35);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#15122a}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--primary2));border-radius:10px;border:2px solid #15122a}
+
+/* Header */
+header{position:sticky;top:0;z-index:30;backdrop-filter:blur(16px);background:rgba(13,11,26,.6);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1280px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--primary2));border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 24px -4px var(--primary);position:relative}
+.logo-icon::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#34d399;border-radius:50%;box-shadow:0 0 0 2px var(--bg)}
+.logo-text h1{font-size:15px;font-weight:700;background:linear-gradient(120deg,#f0abfc,#c084fc,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo-text p{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,.1);color:#34d399;padding:4px 10px;border-radius:999px;font-size:11px}
+.status-dot{width:6px;height:6px;background:#34d399;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Stepper */
+.stepper{max-width:1280px;margin:24px auto 0;padding:0 24px;overflow-x:auto}
+.stepper-list{display:flex;align-items:center;gap:6px;justify-content:center;min-width:max-content;margin:0 auto;padding-bottom:8px}
+.step{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:all .3s;font-family:inherit;font-size:14px}
+.step:hover:not(:disabled){background:rgba(168,85,247,.08)}
+.step.active{background:rgba(168,85,247,.15);color:#fff;box-shadow:0 0 0 2px rgba(168,85,247,.6)}
+.step.done{color:#c084fc}
+.step:disabled{opacity:.4;cursor:not-allowed}
+.step-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:rgba(255,255,255,.05);flex-shrink:0}
+.step.active .step-icon{background:var(--primary);color:#fff;animation:pulse-glow 2.5s ease-in-out infinite}
+.step.done .step-icon{background:rgba(168,85,247,.3);color:#c084fc}
+.step-connector{width:24px;height:1px;background:var(--border)}
+.step-connector.done{background:var(--primary)}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.5)}50%{box-shadow:0 0 30px 6px rgba(168,85,247,.15)}}
+
+/* Layout */
+main{max-width:1280px;margin:0 auto;padding:24px;flex:1}
+.layout{display:flex;flex-direction:column;min-height:100vh}
+footer{margin-top:auto;border-top:1px solid var(--border);background:rgba(13,11,26,.6);backdrop-filter:blur(8px);padding:16px 24px}
+.footer-inner{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:8px;text-align:center;font-size:12px;color:var(--muted)}
+
+/* Glass card */
+.glass-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:14px;padding:32px}
+.glass-card.compact{padding:20px}
+
+/* Stage */
+.stage{display:none}
+.stage.active{display:block;animation:fade-up .5s cubic-bezier(.16,1,.3,1)}
+@keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.stage-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:24px}
+.stage-icon{width:40px;height:40px;background:rgba(168,85,247,.2);color:var(--primary);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stage-title{font-size:20px;font-weight:700}
+.stage-subtitle{font-size:14px;color:var(--muted);margin-top:2px}
+
+/* Form */
+.form-group{margin-bottom:20px}
+.label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px;font-weight:500}
+.label-hint{font-size:11px;color:var(--muted)}
+textarea,input[type=text],select{
+  width:100%;background:rgba(13,11,26,.6);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;color:var(--fg);font-family:inherit;font-size:15px;resize:vertical;transition:all .2s
+}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(168,85,247,.15)}
+textarea{min-height:120px;line-height:1.7}
+.counter{font-size:11px;color:var(--muted);text-align:left;margin-top:4px}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+
+.slider-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.slider-value{font-weight:700;color:var(--primary);font-size:16px}
+input[type=range]{width:100%;-webkit-appearance:none;background:transparent;height:24px}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:rgba(255,255,255,.1);border-radius:3px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--primary);border-radius:50%;margin-top:-6px;cursor:pointer;box-shadow:0 0 8px rgba(168,85,247,.5)}
+input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,.1);border-radius:3px}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;background:var(--primary);border:none;border-radius:50%;cursor:pointer}
+
+/* Buttons */
+.btn{padding:12px 22px;border-radius:10px;border:1px solid transparent;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 0 16px -4px var(--primary)}
+.btn-primary:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--fg)}
+.btn-outline:hover{background:rgba(255,255,255,.05);border-color:rgba(168,85,247,.4)}
+.btn-lg{padding:14px 28px;font-size:16px;width:100%}
+.btn-sm{padding:8px 12px;font-size:12px}
+.btn-ghost{background:transparent;color:var(--muted)}
+.btn-ghost:hover{color:var(--fg)}
+.btn-link{background:transparent;border:none;color:var(--primary);font-family:inherit;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px}
+.btn-link:hover{opacity:.8}
+
+/* Scene cards */
+.scene-grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+@media(max-width:640px){.scene-grid{grid-template-columns:1fr}}
+.scene-card{background:rgba(35,30,60,.4);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s}
+.scene-card:hover{border-color:rgba(168,85,247,.4)}
+.scene-card-header{display:flex;gap:12px;margin-bottom:10px}
+.scene-num{width:36px;height:36px;background:rgba(168,85,247,.15);color:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.scene-title{font-weight:700;font-size:15px;margin-bottom:2px}
+.scene-meta-badge{display:inline-block;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:6px;font-size:10px;color:var(--muted)}
+.scene-desc{color:var(--muted);font-size:13px;line-height:1.7;margin-top:8px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+details{margin-top:8px;font-size:11px}
+summary{cursor:pointer;color:rgba(168,85,247,.7);padding:4px 0}
+summary:hover{color:var(--primary)}
+details p{margin-top:6px;color:rgba(168,143,196,.6);direction:ltr;text-align:left;background:rgba(0,0,0,.2);padding:8px;border-radius:6px;font-size:10px;line-height:1.6}
+
+/* Image grid */
+.image-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.image-card{background:rgba(35,30,60,.4);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s}
+.image-card:hover{border-color:rgba(168,85,247,.4);transform:translateY(-2px)}
+.image-thumb{aspect-ratio:16/9;background:rgba(255,255,255,.03);overflow:hidden;position:relative}
+.image-thumb img{width:100%;height:100%;object-fit:cover;animation:fade-in-img .6s}
+@keyframes fade-in-img{from{opacity:0;transform:scale(1.05)}to{opacity:1;transform:scale(1)}}
+.image-thumb.loading::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(168,85,247,.25),transparent);background-size:200% 100%;animation:shimmer 1.8s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.image-info{padding:14px}
+.image-num-badge{position:absolute;top:8px;right:8px;width:28px;height:28px;background:rgba(168,85,247,.85);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;backdrop-filter:blur(8px);z-index:2}
+.image-loading-icon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted)}
+
+/* Stage 4 */
+.av-grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+@media(max-width:900px){.av-grid{grid-template-columns:1fr}}
+.av-card{background:rgba(35,30,60,.4);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.av-card-body{padding:16px}
+.av-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.badge{padding:4px 10px;border-radius:6px;font-size:11px;background:rgba(255,255,255,.05);color:var(--muted);display:inline-flex;align-items:center;gap:4px;font-weight:500}
+.badge.done{background:rgba(52,211,153,.15);color:#34d399}
+.badge.processing{background:rgba(251,191,36,.15);color:#fbbf24}
+.badge.error{background:rgba(239,68,68,.15);color:#ef4444}
+.badge.idle{background:rgba(168,85,247,.15);color:#c084fc}
+.av-thumb{width:80px;height:60px;border-radius:6px;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.av-card-video{border-top:1px solid var(--border)}
+.av-card-video video{width:100%;aspect-ratio:16/9;background:#000;display:block}
+
+/* Stage 5 - Player */
+.player-section{max-width:1024px;margin:0 auto}
+.player-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.player-header .stage-icon{margin-right:auto}
+.title-text h2{font-size:22px;font-weight:700;background:linear-gradient(120deg,#f0abfc,#a855f7,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.title-text p{font-size:12px;color:var(--muted);margin-top:2px}
+
+.toggle-row{display:flex;gap:14px;align-items:center}
+.toggle{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer}
+.toggle input{display:none}
+.toggle-switch{width:34px;height:18px;background:rgba(255,255,255,.1);border-radius:999px;position:relative;transition:background .2s}
+.toggle-switch::after{content:'';position:absolute;top:2px;right:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle input:checked + .toggle-switch{background:var(--primary)}
+.toggle input:checked + .toggle-switch::after{transform:translateX(-16px)}
+
+.player-wrap{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:1px solid var(--border);box-shadow:0 0 40px -8px rgba(168,85,247,.35)}
+.player-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.player-img.kb-zoom-pan{animation:kb-zoom-pan 5s ease-in-out forwards}
+.player-img.kb-pan-right{animation:kb-pan-right 5s ease-in-out forwards}
+.player-img.kb-pan-left{animation:kb-pan-left 5s ease-in-out forwards}
+.player-img.kb-zoom-in{animation:kb-zoom-in 5s ease-in-out forwards}
+.player-img.kb-zoom-out{animation:kb-zoom-out 5s ease-in-out forwards}
+.player-img.paused{animation:none !important;transform:scale(1.1)}
+@keyframes kb-zoom-pan{0%{transform:scale(1.1) translate(-4%,-2%)}100%{transform:scale(1.25) translate(4%,2%)}}
+@keyframes kb-pan-right{0%{transform:scale(1.15) translateX(-6%)}100%{transform:scale(1.2) translateX(6%)}}
+@keyframes kb-pan-left{0%{transform:scale(1.2) translateX(6%)}100%{transform:scale(1.15) translateX(-6%)}}
+@keyframes kb-zoom-in{0%{transform:scale(1)}100%{transform:scale(1.25)}}
+@keyframes kb-zoom-out{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+.player-vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.5),transparent 30%,transparent 70%,rgba(0,0,0,.2))}
+.scene-meta{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);padding:6px 12px;border-radius:999px;font-size:12px;color:#fff;display:flex;align-items:center;gap:8px;z-index:3}
+.scene-meta .meta-icon{color:#c084fc}
+.scene-meta .video-tag{color:#34d399;display:inline-flex;align-items:center;gap:3px}
+
+.title-card{position:absolute;left:0;right:0;bottom:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.4),transparent);color:#fff;transition:opacity .4s;z-index:2}
+.title-card h3{font-size:28px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.title-card p{font-size:12px;opacity:.7;margin-top:4px}
+
+.caption{position:absolute;left:0;right:0;bottom:0;padding:16px;display:flex;justify-content:center;pointer-events:none;z-index:3}
+.caption p{max-width:600px;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);padding:8px 16px;border-radius:8px;font-size:15px;text-align:center;color:#fff;line-height:1.7}
+
+.play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5}
+.play-overlay.hidden{display:none}
+.play-btn-big{width:80px;height:80px;background:rgba(168,85,247,.9);color:#fff;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(168,85,247,.5);animation:pulse-glow 2.5s ease-in-out infinite;cursor:pointer}
+.play-btn-big:hover{transform:scale(1.1)}
+
+/* Progress */
+.progress-row{display:flex;align-items:center;gap:12px;margin-top:16px}
+.time-label{font-size:12px;color:var(--muted);width:48px;text-align:center;font-family:monospace}
+.progress-bar{flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:3px;cursor:pointer;position:relative}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:3px;width:0%;transition:width .2s linear}
+
+/* Controls */
+.controls{display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px}
+.controls-group{display:flex;align-items:center;gap:6px}
+.icon-btn{width:36px;height:36px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.icon-btn:hover{background:rgba(255,255,255,.05);border-color:rgba(168,85,247,.4)}
+.icon-btn.primary{background:var(--primary);border-color:var(--primary)}
+.icon-btn.active{background:rgba(168,85,247,.2);border-color:var(--primary);color:var(--primary)}
+.volume-row{display:flex;align-items:center;gap:8px;margin-right:8px}
+
+/* Timeline */
+.timeline-strip{margin-top:20px;overflow-x:auto}
+.timeline-label{font-size:12px;color:var(--muted);margin-bottom:8px}
+.timeline-list{display:flex;gap:8px;padding-bottom:8px}
+.timeline-thumb{width:96px;flex-shrink:0;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;position:relative;opacity:.7;transition:all .2s;background:#000}
+.timeline-thumb:hover{opacity:1}
+.timeline-thumb.active{border-color:var(--primary);opacity:1;transform:scale(1.05);box-shadow:0 0 16px -4px var(--primary)}
+.timeline-thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.timeline-num{position:absolute;bottom:4px;right:4px;font-size:10px;color:#fff;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:4px}
+.timeline-progress{position:absolute;bottom:0;left:0;height:3px;background:var(--primary)}
+.timeline-badge{position:absolute;top:4px;left:4px;width:18px;height:18px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:360px;z-index:100;opacity:0;transform:translateY(20px);transition:all .3s}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
+.toast-desc{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Spinner */
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+.spinner.lg{width:32px;height:32px;border-width:3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.flex-end{display:flex;justify-content:flex-end;margin-top:24px;gap:8px;align-items:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:8px;flex-wrap:wrap}
+.notice{margin-top:8px;font-size:11px;color:var(--muted);text-align:right}
+.notice.success{color:#34d399}
+.hidden{display:none !important}
+
+/* Info banner */
+.info-banner{margin-top:16px;padding:12px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media(max-width:640px){
+  .glass-card{padding:20px}
+  .stage-header{flex-wrap:wrap}
+  .title-text h2{font-size:18px}
+  .toggle-row{margin-top:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 001.3 1.3L21 12l-5.8 1.9a2 2 0 00-1.3 1.3L12 21l-1.9-5.8a2 2 0 00-1.3-1.3L3 12l5.8-1.9a2 2 0 001.3-1.3z"/></svg>
+      </div>
+      <div class="logo-text">
+        <h1>استودیو انیمیشن هوش مصنوعی</h1>
+        <p>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+          نسخه دمو آفلاین — قابل اجرا بدون سرور
+        </p>
+      </div>
+    </div>
+    <span class="status-pill">
+      <span class="status-dot"></span>
+      آنلاین
+    </span>
+  </div>
+</header>
+
+<nav class="stepper" aria-label="مراحل">
+  <div class="stepper-list" id="stepper"></div>
+</nav>
+
+<main>
+  <!-- Stage 1: Story -->
+  <section class="stage active" id="stage1">
+    <div class="glass-card" style="max-width:768px;margin:0 auto;">
+      <div class="stage-header">
+        <div class="stage-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M3 21l9-9M12.2 6.2L11 5"/></svg>
+        </div>
+        <div>
+          <div class="stage-title">داستان خود را بسازید</div>
+          <div class="stage-subtitle">ایده انیمیشن‌تان را بنویسید — هوش مصنوعی آن را به صحنه‌های حرفه‌ای تبدیل می‌کند.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="label">
+          <span>داستان انیمیشن</span>
+          <button class="btn-link" onclick="pickPreset()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+            نمونه تصادفی
+          </button>
+        </div>
+        <textarea id="storyInput" placeholder="مثال: قهرمان داستان کیست، در کجا قرار دارد و چه ماجرایی پیش می‌آید؟" maxlength="1500"></textarea>
+        <div class="counter"><span id="storyCounter">0</span>/1500</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <div class="label"><span>سبک بصری</span></div>
+          <select id="styleSelect">
+            <option value="cinematic">سینمایی</option>
+            <option value="anime">انیمه</option>
+            <option value="pixar-3d">سه‌بعدی پیکساری</option>
+            <option value="watercolor">آبرنگی</option>
+            <option value="cyberpunk">سایبرپانک</option>
+            <option value="noir">نوآر</option>
+            <option value="fantasy">فانتزی</option>
+            <option value="minimal">مینیمال</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="label"><span>حال و هوا</span></div>
+          <select id="moodSelect">
+            <option value="epic">حماسی</option>
+            <option value="dreamy">رویایی</option>
+            <option value="mysterious">مرموز</option>
+            <option value="joyful">شاد</option>
+            <option value="sad">غمگین</option>
+            <option value="tense">هیجانی</option>
+            <option value="calm">آرام</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="slider-row">
+          <span>تعداد صحنه‌ها</span>
+          <span class="slider-value" id="sceneCountVal">4</span>
+        </div>
+        <input type="range" id="sceneCount" min="2" max="10" step="1" value="4">
+        <div class="label-hint">۲ تا ۱۰ صحنه — هرچه بیشتر، انیمیشن طولانی‌تر</div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="genScenesBtn" onclick="generateScenes()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 001.3 1.3L21 12l-5.8 1.9a2 2 0 00-1.3 1.3L12 21l-1.9-5.8a2 2 0 00-1.3-1.3L3 12l5.8-1.9a2 2 0 001.3-1.3z"/></svg>
+        ساخت صحنه‌ها با هوش مصنوعی
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Stage 2: Scenes -->
+  <section class="stage" id="stage2">
+    <div class="glass-card">
+      <div class="flex-between" style="margin-top:0">
+        <div class="stage-header" style="margin-bottom:0">
+          <div class="stage-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 4v16M17 4v16M2 8h5M2 16h5M17 8h5M17 16h5M2 12h20"/></svg>
+          </div>
+          <div>
+            <div class="stage-title" id="animTitle">انیمیشن شما</div>
+            <div class="stage-subtitle" id="animSummary"></div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="generateScenes()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-9-9c2.5 0 4.8 1 6.5 2.6L21 8"/><path d="M21 3v5h-5"/></svg>
+          بازسازی صحنه‌ها
+        </button>
+      </div>
+
+      <div class="scene-grid" id="sceneGrid" style="margin-top:24px"></div>
+
+      <div class="flex-end">
+        <button class="btn btn-primary" onclick="goToStage(3)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          تأیید و ساخت تصاویر
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stage 3: Images -->
+  <section class="stage" id="stage3">
+    <div class="glass-card">
+      <div class="flex-between" style="margin-top:0">
+        <div class="stage-header" style="margin-bottom:0">
+          <div class="stage-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+          </div>
+          <div>
+            <div class="stage-title">تولید تصاویر صحنه‌ها</div>
+            <div class="stage-subtitle">برای هر صحنه یک تصویر باکیفیت تولید می‌شود.</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" id="genAllImagesBtn" onclick="generateAllImages()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 001.3 1.3L21 12l-5.8 1.9a2 2 0 00-1.3 1.3L12 21l-1.9-5.8a2 2 0 00-1.3-1.3L3 12l5.8-1.9a2 2 0 001.3-1.3z"/></svg>
+          ساخت همه تصاویر
+        </button>
+      </div>
+
+      <div class="image-grid" id="imageGrid" style="margin-top:24px"></div>
+
+      <div id="stage3Actions" class="hidden">
+        <div class="info-banner">
+          <div style="display:flex;align-items:center;gap:8px;color:#c084fc">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span style="font-weight:500">همه تصاویر آماده‌اند!</span>
+          </div>
+          <button class="btn btn-primary" onclick="goToStage(4)">
+            ادامه به صدا و حرکت
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stage 4: Audio & Video -->
+  <section class="stage" id="stage4">
+    <div class="glass-card">
+      <div class="flex-between" style="margin-top:0">
+        <div class="stage-header" style="margin-bottom:0">
+          <div class="stage-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div>
+            <div class="stage-title">صدا و حرکت</div>
+            <div class="stage-subtitle">صداگذاری فارسی + تولید ویدیو با افکت سینمایی</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0">
+        <button class="btn btn-primary btn-sm" id="genAllAudioBtn" onclick="generateAllAudio()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          ساخت همه صداها
+        </button>
+        <button class="btn btn-outline btn-sm" id="genAllVideoBtn" onclick="generateAllVideos()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+          ساخت همه ویدیوها (Ken Burns)
+        </button>
+      </div>
+
+      <div class="av-grid" id="avGrid"></div>
+
+      <div class="flex-end">
+        <button class="btn btn-primary" id="finalPlayBtn" onclick="goToStage(5)" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          پخش نهایی انیمیشن
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+      </div>
+      <div class="notice" id="stage4Notice">برای ادامه، صدای همه صحنه‌ها لازم است.</div>
+    </div>
+  </section>
+
+  <!-- Stage 5: Final Player -->
+  <section class="stage" id="stage5">
+    <div class="glass-card player-section">
+      <div class="player-header">
+        <div class="stage-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 4v16M17 4v16"/></svg>
+        </div>
+        <div class="title-text">
+          <h2 id="playerTitle">انیمیشن شما</h2>
+          <p id="playerMeta"></p>
+        </div>
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" id="toggleCaptions" checked onchange="updatePlayer()">
+            <span class="toggle-switch"></span>
+            <span>زیرنویس</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="toggleTitle" checked onchange="updatePlayer()">
+            <span class="toggle-switch"></span>
+            <span>عنوان</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="player-wrap">
+        <img id="playerImg" class="player-img paused" src="" alt="">
+        <div class="player-vignette"></div>
+        <div class="scene-meta" id="sceneMeta">
+          <span id="sceneNumText">صحنه ۱/۴</span>
+          <span>•</span>
+          <span id="sceneTitleText"></span>
+          <span class="meta-icon" id="sceneModeTag">✦ Ken Burns</span>
+        </div>
+        <div class="title-card" id="titleCard">
+          <h3 id="titleCardText"></h3>
+          <p id="titleCardMeta"></p>
+        </div>
+        <div class="caption" id="caption">
+          <p id="captionText"></p>
+        </div>
+        <div class="play-overlay" id="playOverlay" onclick="togglePlay()">
+          <button class="play-btn-big" aria-label="پخش">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-row">
+        <span class="time-label" id="curTime">0s</span>
+        <div class="progress-bar" id="progressBar" onclick="seekTo(event)">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span class="time-label" id="totalTime">5s</span>
+      </div>
+
+      <div class="controls">
+        <div class="controls-group">
+          <button class="icon-btn" onclick="prevScene()" aria-label="قبلی">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg>
+          </button>
+          <button class="icon-btn primary" onclick="togglePlay()" aria-label="پخش/مکث" id="playBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button class="icon-btn" onclick="nextScene()" aria-label="بعدی">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg>
+          </button>
+          <button class="icon-btn" onclick="restart()" aria-label="شروع مجدد">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-9-9c2.5 0 4.8 1 6.5 2.6L21 8"/><path d="M21 3v5h-5"/></svg>
+          </button>
+        </div>
+        <div class="controls-group">
+          <button class="icon-btn" id="loopBtn" onclick="toggleLoop()" aria-label="تکرار">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 01-4 4H3"/></svg>
+          </button>
+          <div class="volume-row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 010 7"/></svg>
+            <input type="range" min="0" max="1" step="0.05" value="0.85" style="width:80px;height:20px" onchange="setVolume(this.value)">
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-strip">
+        <div class="timeline-label">تایم‌لاین صحنه‌ها</div>
+        <div class="timeline-list" id="timelineList"></div>
+      </div>
+
+      <div class="flex-between">
+        <button class="btn btn-outline" onclick="goToStage(4)">بازگشت به ویرایش</button>
+        <button class="btn btn-outline" onclick="resetAll()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 001.3 1.3L21 12l-5.8 1.9a2 2 0 00-1.3 1.3L12 21l-1.9-5.8a2 2 0 00-1.3-1.3L3 12l5.8-1.9a2 2 0 001.3-1.3z"/></svg>
+          ساخت انیمیشن جدید
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>ساخته‌شده با ❤️ توسط هوش مصنوعی — نسخه دمو آفلاین</div>
+    <div style="display:flex;align-items:center;gap:6px;justify-content:center">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+      Image Gen • TTS • Video • Ken Burns
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-desc" id="toastDesc"></div>
+</div>
+
+<script>
+// ===== State =====
+const state = {
+  stage: 1,
+  story: '',
+  style: 'cinematic',
+  mood: 'epic',
+  sceneCount: 4,
+  scenes: [],
+  meta: { title: '', summary: '' },
+  currentIdx: 0,
+  isPlaying: false,
+  loopMode: false,
+  showCaptions: true,
+  showTitle: true,
+  volume: 0.85,
+  progress: 0,
+  sceneTimer: null,
+  progressTimer: null,
+};
+
+// ===== Persian digits =====
+const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const toFa = n => String(n).replace(/\d/g, d => faDigits[+d]);
+
+// ===== SVG icons =====
+const ICONS = {
+  wand: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M3 21l9-9"/></svg>',
+  film: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 4v16M17 4v16"/></svg>',
+  image: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>',
+  music: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+  check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+};
+
+const STAGES = [
+  { id: 1, label: 'داستان', icon: ICONS.wand },
+  { id: 2, label: 'صحنه‌بندی', icon: ICONS.film },
+  { id: 3, label: 'تصاویر', icon: ICONS.image },
+  { id: 4, label: 'صدا و حرکت', icon: ICONS.music },
+  { id: 5, label: 'پخش نهایی', icon: ICONS.play },
+];
+
+const PRESETS = [
+  'یک فضانورد تنها در سیاره سرخ مریخ که در جستجوی نشانه‌ای از حیات است.',
+  'گربه‌ای کوچک در شهر بزرگ شب‌هنگام که به دنبال خانه گمشده‌اش می‌گردد.',
+  'آخرین اژدها روی قله کوهی در طلوع آفتاب که منتظر یک دوست قدیمی است.',
+  'رویاهای یک دختر بچه که می‌تواند با نقاشی‌هایش دنیا را تغییر دهد.',
+  'جنگل جادویی که در آن درختان با نور خودشان می‌درخشند.',
+];
+
+// Sample Persian scene templates (used to "simulate" LLM scene breakdown)
+const SCENE_TEMPLATES = {
+  titles: ['آغاز سفر', 'ورود به ناشناخته', 'جستجو در تاریکی', 'کشف راز', 'نبرد بزرگ', 'بازگشت خانه', 'طلوع امید', 'جنگل درخشان', 'ملاقات با دوست', 'یافتن گنج'],
+  motions: [
+    'slow camera pan from left to right, cinematic',
+    'zoom in on character face with subtle dolly',
+    'aerial drone shot slowly descending',
+    'tracking shot following the character',
+    'slow push-in on landscape at golden hour',
+    'parallax pan revealing the scene depth',
+    'gentle zoom out to reveal scale',
+    'rotating orbit around the subject',
+  ],
+  visualEnhancers: {
+    cinematic: 'cinematic lighting, dramatic shadows, film grain, anamorphic',
+    anime: 'anime art style, vibrant colors, hand-drawn cel shading',
+    'pixar-3d': 'pixar-style 3D render, soft global illumination, subsurface scattering',
+    watercolor: 'watercolor painting style, soft bleeding edges, dreamy palette',
+    cyberpunk: 'cyberpunk neon, rain-slicked streets, holographic reflections',
+    noir: 'film noir black and white, harsh shadows, smoke-filled room',
+    fantasy: 'epic fantasy concept art, ethereal glow, magical particles',
+    minimal: 'minimalist composition, negative space, soft pastel tones',
+  },
+};
+
+// ===== Init =====
+function init() {
+  renderStepper();
+  bindInputs();
+  // Try to use browser SpeechSynthesis for Persian
+  if ('speechSynthesis' in window) {
+    state.hasTTS = true;
+    // Warm up voices
+    speechSynthesis.getVoices();
+  }
+}
+
+function bindInputs() {
+  const storyInput = document.getElementById('storyInput');
+  storyInput.addEventListener('input', e => {
+    state.story = e.target.value;
+    document.getElementById('storyCounter').textContent = e.target.value.length;
+  });
+  document.getElementById('styleSelect').addEventListener('change', e => state.style = e.target.value);
+  document.getElementById('moodSelect').addEventListener('change', e => state.mood = e.target.value);
+  document.getElementById('sceneCount').addEventListener('input', e => {
+    state.sceneCount = +e.target.value;
+    document.getElementById('sceneCountVal').textContent = toFa(e.target.value);
+  });
+}
+
+// ===== Stepper =====
+function renderStepper() {
+  const el = document.getElementById('stepper');
+  el.innerHTML = STAGES.map((s, i) => {
+    const active = state.stage === s.id;
+    const done = state.stage > s.id;
+    const canVisit = s.id === 1 ||
+      (s.id === 2 && state.scenes.length > 0) ||
+      (s.id === 3 && state.scenes.length > 0) ||
+      (s.id === 4 && state.scenes.length > 0) ||
+      (s.id === 5 && state.scenes.length > 0);
+    return `
+      <button class="step ${active ? 'active' : ''} ${done ? 'done' : ''}" 
+              ${canVisit ? '' : 'disabled'} 
+              onclick="goToStage(${s.id})">
+        <span class="step-icon">${done ? ICONS.check : s.icon}</span>
+        <span>${s.label}</span>
+      </button>
+      ${i < STAGES.length - 1 ? `<span class="step-connector ${done ? 'done' : ''}"></span>` : ''}
+    `;
+  }).join('');
+}
+
+// ===== Stage navigation =====
+function goToStage(n) {
+  state.stage = n;
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.getElementById('stage' + n).classList.add('active');
+  renderStepper();
+  if (n === 3) renderImageGrid();
+  if (n === 4) renderAVGrid();
+  if (n === 5) initPlayer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== Toast =====
+function toast(title, desc = '') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastDesc').textContent = desc;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ===== Preset =====
+function pickPreset() {
+  const idx = Math.floor(Math.random() * PRESETS.length);
+  document.getElementById('storyInput').value = PRESETS[idx];
+  state.story = PRESETS[idx];
+  document.getElementById('storyCounter').textContent = PRESETS[idx].length;
+  toast('نمونه بارگذاری شد', 'می‌توانید ویرایش کنید یا همین را استفاده کنید.');
+}
+
+// ===== Generate scenes (simulated LLM) =====
+async function generateScenes() {
+  const story = state.story.trim();
+  if (story.length < 10) {
+    toast('داستان کوتاه است', 'حداقل ۱۰ کاراکتر وارد کنید.');
+    return;
+  }
+
+  const btn = document.getElementById('genScenesBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> در حال ساخت صحنه‌ها...';
+
+  // Simulate AI processing
+  await sleep(1500);
+
+  // Build scene breakdown — split story into N chunks with Persian narrative
+  const N = state.sceneCount;
+  const sentences = story.split(/[.!؟؟]/).filter(s => s.trim().length > 3);
+  const scenes = [];
+
+  // Generate N scenes from the story
+  for (let i = 0; i < N; i++) {
+    const t = SCENE_TEMPLATES.titles[i % SCENE_TEMPLATES.titles.length];
+    const motion = SCENE_TEMPLATES.motions[i % SCENE_TEMPLATES.motions.length];
+    const visualStyle = SCENE_TEMPLATES.visualEnhancers[state.style] || SCENE_TEMPLATES.visualEnhancers.cinematic;
+
+    // Build Persian narration — either take a sentence from story or build from story
+    let desc;
+    if (sentences.length >= N) {
+      desc = sentences[i % sentences.length].trim() + '.';
+    } else {
+      // Distribute story across scenes
+      const chunkSize = Math.ceil(story.length / N);
+      desc = story.slice(i * chunkSize, (i + 1) * chunkSize).trim();
+      if (i === 0) desc = 'در ابتدای ماجرا، ' + desc;
+      else if (i === N - 1) desc = 'و در پایان، ' + desc;
+      else desc = 'سپس ' + desc;
+    }
+
+    // English image prompt
+    const imagePrompt = `${story.slice(0, 100)} scene ${i+1}, ${t}, ${visualStyle}, ${state.mood} mood, highly detailed, 8k`;
+
+    scenes.push({
+      index: i,
+      title: t,
+      description: desc,
+      image_prompt: imagePrompt,
+      motion_prompt: motion,
+      duration: 5,
+      voice: 'tongtong',
+      image: null,
+      audio: null,
+      videoStatus: 'idle',
+      kenVariant: ['kb-zoom-pan','kb-pan-right','kb-zoom-in','kb-pan-left','kb-zoom-out'][i % 5],
+    });
+  }
+
+  state.scenes = scenes;
+  state.meta = {
+    title: extractTitle(story),
+    summary: story.slice(0, 80) + (story.length > 80 ? '...' : ''),
+  };
+
+  btn.disabled = false;
+  btn.innerHTML = `${ICONS.wand.replace('width="14"','width="20"').replace('height="14"','height="20"')} ساخت صحنه‌ها با هوش مصنوعی`;
+
+  toast('صحنه‌ها آماده شدند!', `${N} صحنه برای انیمیشن شما ساخته شد.`);
+  goToStage(2);
+}
+
+function extractTitle(story) {
+  // Take first 4 words as title
+  const words = story.trim().split(/\s+/).slice(0, 4).join(' ');
+  return words;
+}
+
+// ===== Stage 2: Render scenes =====
+function renderScenes() {
+  document.getElementById('animTitle').textContent = state.meta.title || 'انیمیشن شما';
+  document.getElementById('animSummary').textContent = state.meta.summary;
+  const grid = document.getElementById('sceneGrid');
+  grid.innerHTML = state.scenes.map((s, i) => `
+    <div class="scene-card">
+      <div class="scene-card-header">
+        <div class="scene-num">${toFa(i + 1)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="scene-title">${escapeHtml(s.title)}</div>
+          <span class="scene-meta-badge">${toFa(s.duration)} ثانیه</span>
+        </div>
+      </div>
+      <div class="scene-desc">${escapeHtml(s.description)}</div>
+      <details>
+        <summary>مشاهده پرامپت تصویر</summary>
+        <p>${escapeHtml(s.image_prompt)}</p>
+      </details>
+    </div>
+  `).join('');
+}
+
+// ===== Stage 3: Images =====
+function renderImageGrid() {
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = state.scenes.map((s, i) => `
+    <div class="image-card">
+      <div class="image-thumb" id="img-thumb-${i}">
+        ${s.image 
+          ? `<img src="${s.image}" alt="${escapeHtml(s.title)}">` 
+          : `<div class="image-loading-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg><span style="font-size:11px">در انتظار...</span></div>`}
+        <div class="image-num-badge">${toFa(i + 1)}</div>
+      </div>
+      <div class="image-info">
+        <div style="font-weight:700;font-size:14px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(s.title)}</div>
+        <div style="font-size:12px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(s.description)}</div>
+        ${s.image 
+          ? `<button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="regenerateImage(${i})">بازسازی تصویر</button>` 
+          : ''}
+      </div>
+    </div>
+  `).join('');
+  // Auto-generate if all empty
+  if (state.scenes.every(s => !s.image)) {
+    setTimeout(() => generateAllImages(), 500);
+  }
+  checkAllImagesDone();
+}
+
+async function generateAllImages() {
+  const queue = state.scenes.filter(s => !s.image);
+  if (queue.length === 0) { toast('همه تصاویر آماده‌اند'); return; }
+  
+  const btn = document.getElementById('genAllImagesBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> در حال ساخت...';
+
+  for (const sc of queue) {
+    const i = state.scenes.findIndex(s => s.index === sc.index);
+    const thumb = document.getElementById('img-thumb-' + i);
+    thumb.classList.add('loading');
+    thumb.innerHTML = `<div class="image-loading-icon"><span class="spinner lg"></span><span style="font-size:11px">در حال خلق تصویر...</span></div><div class="image-num-badge">${toFa(i + 1)}</div>`;
+    
+    await sleep(800 + Math.random() * 600);
+    
+    // Use picsum.photos with seed for "AI generated" looking image
+    const seed = Math.abs(hashCode(sc.image_prompt)) % 10000;
+    const url = `https://picsum.photos/seed/${seed}/800/450`;
+    sc.image = url;
+    state.scenes[i] = sc;
+    
+    thumb.classList.remove('loading');
+    thumb.innerHTML = `<img src="${url}" alt="${escapeHtml(sc.title)}" onload="this.style.opacity=1"><div class="image-num-badge">${toFa(i + 1)}</div>`;
+    
+    await sleep(300);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = `${ICONS.image} ساخت همه تصاویر`;
+  renderImageGrid();
+  toast('تصاویر آماده شدند!', `${state.scenes.length} تصویر ساخته شد.`);
+}
+
+function hashCode(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h) + s.charCodeAt(i);
+    h |= 0;
+  }
+  return h;
+}
+
+async function regenerateImage(i) {
+  const sc = state.scenes[i];
+  const thumb = document.getElementById('img-thumb-' + i);
+  thumb.classList.add('loading');
+  thumb.innerHTML = `<div class="image-loading-icon"><span class="spinner lg"></span></div><div class="image-num-badge">${toFa(i + 1)}</div>`;
+  await sleep(800);
+  const seed = Math.floor(Math.random() * 10000);
+  sc.image = `https://picsum.photos/seed/${seed}/800/450`;
+  thumb.classList.remove('loading');
+  thumb.innerHTML = `<img src="${sc.image}" alt="${escapeHtml(sc.title)}"><div class="image-num-badge">${toFa(i + 1)}</div>`;
+  toast('تصویر جدید ساخته شد');
+}
+
+function checkAllImagesDone() {
+  const allDone = state.scenes.length > 0 && state.scenes.every(s => s.image);
+  document.getElementById('stage3Actions').classList.toggle('hidden', !allDone);
+}
+
+// ===== Stage 4: Audio & Video =====
+function renderAVGrid() {
+  const grid = document.getElementById('avGrid');
+  grid.innerHTML = state.scenes.map((s, i) => `
+    <div class="av-card">
+      <div class="av-card-body" style="display:flex;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div class="scene-num" style="width:32px;height:32px;font-size:12px">${toFa(i + 1)}</div>
+            <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:hidden">${escapeHtml(s.title)}</div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(s.description)}</div>
+          <div class="av-row">
+            <button class="icon-btn ${s.audio ? 'active' : ''}" onclick="playAudio(${i})" ${s.audio ? '' : 'disabled'} style="${s.audio ? '' : 'opacity:.4'}">
+              ${s.audio ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>' : '<span class="spinner" style="width:14px;height:14px"></span>'}
+            </button>
+            <span class="badge ${audioBadgeClass(s)}">${audioBadgeText(s)}</span>
+            <button class="btn btn-ghost btn-sm" onclick="generateAudio(${i})">${s.audio ? 'بازسازی صدا' : 'ساخت صدا'}</button>
+          </div>
+          <div class="av-row" style="margin-top:8px">
+            <button class="icon-btn ${s.videoStatus === 'SUCCESS' ? 'active' : ''}" onclick="playKenBurns(${i})" ${s.image ? '' : 'disabled'} style="${s.image ? '' : 'opacity:.4'}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+            </button>
+            <span class="badge ${videoBadgeClass(s)}">${videoBadgeText(s)}</span>
+          </div>
+        </div>
+        <img class="av-thumb" src="${s.image || ''}" alt="" style="${s.image ? '' : 'display:none'}">
+      </div>
+    </div>
+  `).join('');
+  checkCanProceed();
+}
+
+function audioBadgeClass(s) {
+  if (s.audio) return 'done';
+  if (s.audioBusy) return 'processing';
+  return 'idle';
+}
+function audioBadgeText(s) {
+  if (s.audio) return '✓ صدا آماده';
+  if (s.audioBusy) return 'در حال ساخت...';
+  return 'صدای ساخته نشده';
+}
+function videoBadgeClass(s) {
+  if (s.videoStatus === 'SUCCESS') return 'done';
+  if (s.videoStatus === 'PROCESSING') return 'processing';
+  if (s.videoStatus === 'FAIL') return 'error';
+  return 'idle';
+}
+function videoBadgeText(s) {
+  if (s.videoStatus === 'SUCCESS') return '✓ ویدیو آماده';
+  if (s.videoStatus === 'PROCESSING') return 'در حال پردازش...';
+  if (s.videoStatus === 'FAIL') return '✕ خطا';
+  return 'ویدیوی ساخته نشده';
+}
+
+async function generateAudio(i) {
+  const sc = state.scenes[i];
+  sc.audioBusy = true;
+  renderAVGrid();
+  
+  await sleep(600);
+  
+  // Use browser SpeechSynthesis for Persian TTS
+  if (state.hasTTS) {
+    sc.audio = { text: sc.description, type: 'browser-tts' };
+  } else {
+    sc.audio = { text: sc.description, type: 'fallback' };
+  }
+  sc.audioBusy = false;
+  renderAVGrid();
+  toast(`صدای صحنه ${toFa(i + 1)} آماده شد`);
+}
+
+async function generateAllAudio() {
+  const btn = document.getElementById('genAllAudioBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> در حال ساخت...';
+  
+  for (let i = 0; i < state.scenes.length; i++) {
+    if (!state.scenes[i].audio) {
+      await generateAudio(i);
+      await sleep(200);
+    }
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = `${ICONS.music} صداهای جدید`;
+  toast('صدای همه صحنه‌ها ساخته شد!', 'حالا می‌توانید ویدیوها را بسازید.');
+}
+
+async function generateVideo(i) {
+  const sc = state.scenes[i];
+  if (!sc.image) { toast('ابتدا تصویر را بسازید'); return; }
+  sc.videoStatus = 'PROCESSING';
+  renderAVGrid();
+  
+  await sleep(1500);
+  
+  // "Generate video" = enable Ken Burns effect for this scene
+  sc.videoStatus = 'SUCCESS';
+  sc.videoUrl = 'kenburns:' + sc.image;
+  renderAVGrid();
+  toast(`ویدیوی صحنه ${toFa(i + 1)} آماده شد!`, 'با افکت سینمایی Ken Burns');
+}
+
+async function generateAllVideos() {
+  const btn = document.getElementById('genAllVideoBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> در حال پردازش...';
+  
+  for (let i = 0; i < state.scenes.length; i++) {
+    if (state.scenes[i].image && state.scenes[i].videoStatus !== 'SUCCESS') {
+      await generateVideo(i);
+      await sleep(400);
+    }
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg> ویدیوهای جدید`;
+}
+
+function playAudio(i) {
+  const sc = state.scenes[i];
+  if (!sc.audio) return;
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(sc.description);
+    u.lang = 'fa-IR';
+    u.rate = 0.95;
+    u.volume = state.volume;
+    speechSynthesis.speak(u);
+    toast('در حال پخش صدا...');
+  }
+}
+
+function playKenBurns(i) {
+  state.currentIdx = i;
+  goToStage(5);
+  setTimeout(() => togglePlay(), 500);
+}
+
+function checkCanProceed() {
+  const allAudio = state.scenes.length > 0 && state.scenes.every(s => s.audio);
+  const anyMedia = state.scenes.length > 0 && state.scenes.some(s => s.image);
+  const can = allAudio && anyMedia;
+  document.getElementById('finalPlayBtn').disabled = !can;
+  const notice = document.getElementById('stage4Notice');
+  if (can) {
+    notice.textContent = '✓ آماده پخش نهایی';
+    notice.className = 'notice success';
+  } else {
+    notice.textContent = 'برای ادامه، صدای همه صحنه‌ها لازم است.';
+    notice.className = 'notice';
+  }
+}
+
+// ===== Stage 5: Player =====
+function initPlayer() {
+  document.getElementById('playerTitle').textContent = state.meta.title || 'انیمیشن شما';
+  const totalDur = state.scenes.reduce((a, s) => a + s.duration, 0);
+  document.getElementById('playerMeta').textContent = `${toFa(state.scenes.length)} صحنه • مدت تقریبی ${toFa(totalDur)} ثانیه`;
+  state.currentIdx = 0;
+  state.progress = 0;
+  state.isPlaying = false;
+  loadScene(0);
+  renderTimeline();
+}
+
+function loadScene(i) {
+  const sc = state.scenes[i];
+  if (!sc) return;
+  state.currentIdx = i;
+  state.progress = 0;
+  
+  const img = document.getElementById('playerImg');
+  img.src = sc.image;
+  img.className = 'player-img paused';
+  
+  document.getElementById('sceneNumText').textContent = `صحنه ${toFa(i + 1)}/${toFa(state.scenes.length)}`;
+  document.getElementById('sceneTitleText').textContent = sc.title;
+  document.getElementById('sceneModeTag').textContent = sc.videoStatus === 'SUCCESS' ? '✦ Ken Burns' : '✦ تصویر';
+  
+  document.getElementById('titleCardText').textContent = sc.title;
+  document.getElementById('titleCardMeta').textContent = `صحنه ${toFa(i + 1)} از ${toFa(state.scenes.length)}`;
+  document.getElementById('captionText').textContent = sc.description;
+  document.getElementById('totalTime').textContent = toFa(sc.duration) + 's';
+  document.getElementById('curTime').textContent = '0s';
+  document.getElementById('progressFill').style.width = '0%';
+  
+  renderTimeline();
+  updatePlayer();
+}
+
+function updatePlayer() {
+  state.showCaptions = document.getElementById('toggleCaptions').checked;
+  state.showTitle = document.getElementById('toggleTitle').checked;
+  document.getElementById('caption').style.display = state.showCaptions ? '' : 'none';
+  document.getElementById('titleCard').style.display = state.showTitle ? '' : 'none';
+}
+
+function renderTimeline() {
+  const list = document.getElementById('timelineList');
+  list.innerHTML = state.scenes.map((s, i) => `
+    <div class="timeline-thumb ${i === state.currentIdx ? 'active' : ''}" onclick="loadScene(${i})">
+      <img src="${s.image || ''}" alt="" style="${s.image ? '' : 'display:none'}">
+      ${!s.image ? '<div style="aspect-ratio:16/9;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">خالی</div>' : ''}
+      <div class="timeline-num">${toFa(i + 1)}</div>
+      ${s.videoStatus === 'SUCCESS' ? '<div class="timeline-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>' : ''}
+      ${i === state.currentIdx ? `<div class="timeline-progress" style="width:${state.progress}%"></div>` : ''}
+    </div>
+  `).join('');
+}
+
+function togglePlay() {
+  if (state.isPlaying) {
+    pause();
+  } else {
+    play();
+  }
+}
+
+function play() {
+  state.isPlaying = true;
+  document.getElementById('playOverlay').classList.add('hidden');
+  document.getElementById('playImg') && (document.getElementById('playIcon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>');
+  document.getElementById('playIcon').outerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playIcon"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  
+  const sc = state.scenes[state.currentIdx];
+  if (!sc) return;
+  
+  // Apply Ken Burns animation
+  const img = document.getElementById('playerImg');
+  img.className = 'player-img ' + (sc.kenVariant || 'kb-zoom-pan');
+  
+  // Restart animation
+  img.style.animation = 'none';
+  void img.offsetWidth;
+  img.style.animation = '';
+  
+  // Play narration if available
+  if (sc.audio && 'speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(sc.description);
+    u.lang = 'fa-IR';
+    u.rate = 0.95;
+    u.volume = state.volume;
+    speechSynthesis.speak(u);
+  }
+  
+  // Progress timer
+  const startTime = Date.now();
+  const duration = sc.duration * 1000;
+  clearInterval(state.progressTimer);
+  state.progressTimer = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    state.progress = Math.min(100, (elapsed / duration) * 100);
+    document.getElementById('progressFill').style.width = state.progress + '%';
+    document.getElementById('curTime').textContent = toFa(Math.floor(elapsed / 1000)) + 's';
+    // Hide title card after 25% progress
+    if (state.progress > 25 && state.showTitle) {
+      document.getElementById('titleCard').style.opacity = '0';
+    } else if (state.showTitle) {
+      document.getElementById('titleCard').style.opacity = '1';
+    }
+  }, 100);
+  
+  // Auto-advance
+  clearTimeout(state.sceneTimer);
+  state.sceneTimer = setTimeout(() => {
+    if (state.currentIdx < state.scenes.length - 1) {
+      loadScene(state.currentIdx + 1);
+      play();
+    } else {
+      state.isPlaying = false;
+      speechSynthesis.cancel();
+      document.getElementById('playOverlay').classList.remove('hidden');
+      document.getElementById('playIcon').outerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+      if (state.loopMode) {
+        setTimeout(() => { loadScene(0); play(); }, 600);
+      }
+    }
+  }, duration);
+}
+
+function pause() {
+  state.isPlaying = false;
+  clearInterval(state.progressTimer);
+  clearTimeout(state.sceneTimer);
+  speechSynthesis.cancel();
+  document.getElementById('playOverlay').classList.remove('hidden');
+  document.getElementById('playIcon').outerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  const img = document.getElementById('playerImg');
+  img.classList.add('paused');
+}
+
+function nextScene() {
+  const i = Math.min(state.scenes.length - 1, state.currentIdx + 1);
+  loadScene(i);
+  if (state.isPlaying) play();
+}
+
+function prevScene() {
+  const i = Math.max(0, state.currentIdx - 1);
+  loadScene(i);
+  if (state.isPlaying) play();
+}
+
+function restart() {
+  loadScene(0);
+  play();
+}
+
+function toggleLoop() {
+  state.loopMode = !state.loopMode;
+  document.getElementById('loopBtn').classList.toggle('active', state.loopMode);
+}
+
+function setVolume(v) {
+  state.volume = +v;
+}
+
+function seekTo(e) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = ((e.clientX - rect.left) / rect.width) * 100;
+  state.progress = Math.max(0, Math.min(100, pct));
+  document.getElementById('progressFill').style.width = state.progress + '%';
+  document.getElementById('curTime').textContent = toFa(Math.floor(state.progress / 100 * state.scenes[state.currentIdx].duration)) + 's';
+}
+
+function resetAll() {
+  if (!confirm('پروژه جدید شروع شود؟')) return;
+  state.story = '';
+  state.scenes = [];
+  state.meta = { title: '', summary: '' };
+  document.getElementById('storyInput').value = '';
+  document.getElementById('storyCounter').textContent = '0';
+  goToStage(1);
+}
+
+// ===== Utils =====
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===== Boot =====
+init();
+
+// Render scenes when reaching stage 2
+const origGoToStage = goToStage;
+window.goToStage = function(n) {
+  origGoToStage(n);
+  if (n === 2) renderScenes();
+  if (n === 3) renderImageGrid();
+  if (n === 4) renderAVGrid();
+  if (n === 5) initPlayer();
+};
+</script>
+</body>
+</html>
